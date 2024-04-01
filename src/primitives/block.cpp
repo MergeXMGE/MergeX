@@ -11,8 +11,7 @@
 #include <tinyformat.h>
 #include <utilstrencodings.h>
 
-static const uint32_t MAINNET_X10ACTIVATIONTIME = 1712110348;
-static const uint32_t MAINNET_X11ACTIVATIONTIME = 1569945600;
+static const uint32_t MAINNET_ALGOCHANGEX10 = 1712110348;
 
 
 //TODO figure out whats best for activating X10
@@ -38,19 +37,19 @@ static const uint32_t MAINNET_X11ACTIVATIONTIME = 1569945600;
 
 uint256 CBlockHeader::GetHash() const
 {
-    if (nTime < MAINNET_X10ACTIVATIONTIME) {
-        uint32_t nTimeToUse = MAINNET_X10ACTIVATIONTIME;
+    if (nTime < MAINNET_ALGOCHANGEX10) {
+        uint32_t nTimeToUse = MAINNET_ALGOCHANGEX10;
         if (nTime >= nTimeToUse) {
             std::vector<unsigned char> vch(80);
             CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
             ss << *this;
-            return HashX10((const char*)vch.data(), (const char*)vch.data() + vch.size());
+            return HashX11((const char*)vch.data(), (const char*)vch.data() + vch.size());
         }
 
         std::vector<unsigned char> vch(80);
         CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
         ss << *this;
-        return HashX11((const char*)vch.data(), (const char*)vch.data() + vch.size());
+        return HashX10((const char*)vch.data(), (const char*)vch.data() + vch.size());
     }
 }
 
