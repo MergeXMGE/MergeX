@@ -5,19 +5,55 @@
 
 #include <primitives/block.h>
 
+#include <crypto/common.h>
 #include <hash.h>
 #include <streams.h>
 #include <tinyformat.h>
 #include <utilstrencodings.h>
-#include <crypto/common.h>
+
+static const uint32_t MAINNET_X10ACTIVATIONTIME = 1712110348;
+static const uint32_t MAINNET_X11ACTIVATIONTIME = 1569945600;
+
+
+//TODO figure out whats best for activating X10
+// uint256 CBlockHeader::GetHash() const
+// {
+//     if (nTime < MAINNET_X11ACTIVATIONTIME) {
+//         std::vector<unsigned char> vch(80);
+//         CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
+//         ss << *this;
+//         return HashX11((const char*)vch.data(), (const char*)vch.data() + vch.size());
+//     } else if (nTime < MAINNET_X10ACTIVATIONTIME) {
+//         std::vector<unsigned char> vch(80);
+//         CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
+//         ss << *this;
+//         return HashX10((const char*)vch.data(), (const char*)vch.data() + vch.size());
+//     }
+//     std::vector<unsigned char> vch(80);
+//     CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
+//     ss << *this;
+//     return HashX11((const char*)vch.data(), (const char*)vch.data() + vch.size());
+// }
+
 
 uint256 CBlockHeader::GetHash() const
 {
-    std::vector<unsigned char> vch(80);
-    CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
-    ss << *this;
-    return HashX10((const char *)vch.data(), (const char *)vch.data() + vch.size());
+    if (nTime < MAINNET_X10ACTIVATIONTIME) {
+        uint32_t nTimeToUse = MAINNET_X10ACTIVATIONTIME;
+        if (nTime >= nTimeToUse) {
+            std::vector<unsigned char> vch(80);
+            CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
+            ss << *this;
+            return HashX10((const char*)vch.data(), (const char*)vch.data() + vch.size());
+        }
+
+        std::vector<unsigned char> vch(80);
+        CVectorWriter ss(SER_GETHASH, PROTOCOL_VERSION, vch, 0);
+        ss << *this;
+        return HashX11((const char*)vch.data(), (const char*)vch.data() + vch.size());
+    }
 }
+
 
 std::string CBlock::ToString() const
 {
