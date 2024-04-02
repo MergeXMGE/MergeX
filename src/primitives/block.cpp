@@ -11,7 +11,7 @@
 #include <tinyformat.h>
 #include <utilstrencodings.h>
 
-static const uint32_t MAINNET_ALGOCHANGEX10 = 1712076120;
+static const uint32_t MAINNET_ALGOCHANGEX10 = 1712079120;
 
 
 //TODO figure out whats best for activating X10
